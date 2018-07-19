@@ -266,3 +266,36 @@ strcmp(s1,s2)比较字符串s1和s2
 trim(str)去除字符串首部和尾部的所有空格
 ucase(str)或upper(str) 返回将字符串str中所有字符转变为大写后的结果
 ```
+
+#### 32. *日期和时间函数*
+```mysql
+curdate()或current_date() 返回当前的日期
+curtime()或current_time() 返回当前的时间
+date_add(date,interval int keyword)返回日期date加上间隔时间int的结果(int必须按照关键字进行格式化),如：selectdate_add(current_date,interval 6 month);
+date_format(date,fmt)  依照指定的fmt格式格式化日期date值
+date_sub(date,interval int keyword)返回日期date加上间隔时间int的结果(int必须按照关键字进行格式化),如：selectdate_sub(current_date,interval 6 month);
+dayofweek(date)   返回date所代表的一星期中的第几天(1~7)
+dayofmonth(date)  返回date是一个月的第几天(1~31)
+dayofyear(date)   返回date是一年的第几天(1~366)
+dayname(date)   返回date的星期名，如：select dayname(current_date);
+from_unixtime(ts,fmt)  根据指定的fmt格式，格式化unix时间戳ts
+hour(time)   返回time的小时值(0~23)
+minute(time)   返回time的分钟值(0~59)
+month(date)   返回date的月份值(1~12)
+monthname(date)   返回date的月份名，如：select monthname(current_date);
+now()    返回当前的日期和时间
+quarter(date)   返回date在一年中的季度(1~4)，如select quarter(current_date);
+week(date)   返回日期date为一年中第几周(0~53)
+year(date)   返回日期date的年份(1000~9999)
+一些示例：
+获取当前系统时间：select from_unixtime(unix_timestamp());
+select extract(year_month from current_date);
+select extract(day_second from current_date);
+select extract(hour_minute from current_date);
+返回两个日期值之间的差值(月数)：select period_diff(200302,199802);
+在mysql中计算年龄：
+select date_format(from_days(to_days(now())-to_days(birthday)),'%y')+0 as age from employee;
+这样，如果brithday是未来的年月日的话，计算结果为0。
+下面的sql语句计算员工的绝对年龄，即当birthday是未来的日期时，将得到负值。
+select date_format(now(), '%y') - date_format(birthday, '%y') -(date_format(now(), '00-%m-%d') <date_format(birthday, '00-%m-%d')) as age from employee
+```
