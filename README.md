@@ -49,6 +49,9 @@ SHOW TABLES;
 #### 9. *查看TABLE表字段信息*
 ```mysql
 SHOW FULL COLUMNS FROM DB_NAME.TABLE_NAME;
+SHOW INDEX FROM DB_NAME.TABLE_NAME;
+SHOW KEYS FROM DB_NAME.TABLE_NAME;
+SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'DB_NAME' AND TABLE_NAME = 'TABLE_NAME'
 ```
 
 #### 10. *创建表的时候指定表的编码*
@@ -131,3 +134,135 @@ SET PASSWORD FOR 'USERNAME'@'HOST' = PASSWORD('PASSWORD');
 FLUSH PRIVILEGES; 
 ```
 刷新系统配置,一般在修改了一些数据库的基本配置之后都需要执行此操作操作才能生效
+
+#### 22. *查看表的创建信息，返回的是sql创建 语句*
+```mysql
+SHOW CREATE TABLE DB_NAME.TABLE_NAME;
+```
+
+#### 23. *查看数据库表的状态详情*
+```mysql
+SHOW TABLE STATUS FROM DB_NAME
+```
+
+#### 24. *相等连接、内连接，即左、右连接的交集*
+```mysql
+SELECT *FROM doctors AS d,orders AS o
+where d.id = o.doctor_id AND d.id<=10
+
+等价于
+
+SELECT *FROM doctors
+JOIN orders AS o ON o.doctor_id = doctors.id AND d.id<=10
+
+SELECT *FROM doctors
+JOIN orders AS o ON o.doctor_id = doctors.id
+WHERE doctors.id <10
+
+SELECT *FROM doctors
+JOIN orders AS o ON o.doctor_id = doctors.id AND doctors.id <10
+WHERE doctors.id <10
+```
+主要是满足d.id = o.id AND  d.id<=10的条件都会出现在结果集里面，也即是根据id相同取交集
+
+#### 25. *外连接*
+1、左连接
+```mysql
+SELECT *FROM doctors AS d
+LEFT JOIN orders AS o ON o.doctor_id = doctors.id
+```
+1、右连接
+```mysql
+SELECT *FROM doctors AS d
+RIGHT JOIN orders AS o ON o.doctor_id = doctors.id
+```
+
+#### 26. *集和运算*
+1、使用UNION求并集并排序
+```mysql
+SELECT a.id FROM
+(
+SELECT orders.id FROM orders WHERE orders.id <10
+UNION
+SELECT doctors.id FROM doctors WHERE doctors.id <10
+) AS a
+ORDER BY a.id desc
+```
+UNION:求并集，合并两个操作的结果，去掉重复的部分 ，使用时列必须相同
+
+2、使用UNION ALL求并集并排序
+```mysql
+SELECT a.id FROM
+(
+SELECT orders.id FROM orders where orders.id <20
+UNION ALL
+SELECT doctors.id FROM doctors where doctors.id <10
+) AS a
+ORDER BY a.id desc
+```
+UNION ALL:并集，合并两个操作的结果，保留重复的部分 
+
+#### 27. *取余数*
+```mysql
+SELECT MOD(234, 10);
+结果：4
+```
+
+#### 28. *取模运算*
+```mysql
+SELECT 234 div 10; 
+结果：2
+```
+
+#### 29. *聚合函数*
+```mysql
+avg(col)返回指定列的平均值
+count(col)返回指定列中非null值的个数
+min(col)返回指定列的最小值
+max(col)返回指定列的最大值
+sum(col)返回指定列的所有值之和
+group_concat(col) 返回由属于一组的列值连接组合而成的结果
+```
+
+#### 30. *数学函数*
+```mysql
+abs(x)   返回x的绝对值
+bin(x)   返回x的二进制（oct返回八进制，hex返回十六进制）
+ceiling(x)   返回大于x的最小整数值
+exp(x)   返回值e（自然对数的底）的x次方
+floor(x)   返回小于x的最大整数值
+greatest(x1,x2,...,xn)返回集合中最大的值
+least(x1,x2,...,xn)      返回集合中最小的值
+ln(x)                    返回x的自然对数
+log(x,y)返回x的以y为底的对数
+mod(x,y)                 返回x/y的模（余数）
+pi()返回pi的值（圆周率）
+rand()返回０到１内的随机值,可以通过提供一个参数(种子)使rand()随机数生成器生成一个指定的值。
+round(x,y)返回参数x的四舍五入的有y位小数的值
+sign(x) 返回代表数字x的符号的值
+sqrt(x) 返回一个数的平方根
+truncate(x,y)            返回数字x截短为y位小数的结果
+```
+
+#### 31. *字符串函数*
+```mysql
+ascii(char)返回字符的ascii码值
+bit_length(str)返回字符串的比特长度
+concat(s1,s2...,sn)将s1,s2...,sn连接成字符串
+concat_ws(sep,s1,s2...,sn)将s1,s2...,sn连接成字符串，并用sep字符间隔
+insert(str,x,y,instr) 将字符串str从第x位置开始，y个字符长的子串替换为字符串instr，返回结果
+find_in_set(str,list)分析逗号分隔的list列表，如果发现str，返回str在list中的位置
+lcase(str)或lower(str) 返回将字符串str中所有字符改变为小写后的结果
+left(str,x)返回字符串str中最左边的x个字符
+length(s)返回字符串str中的字符数
+ltrim(str) 从字符串str中切掉开头的空格
+position(substr,str) 返回子串substr在字符串str中第一次出现的位置
+quote(str) 用反斜杠转义str中的单引号
+repeat(str,srchstr,rplcstr)返回字符串str重复x次的结果
+reverse(str) 返回颠倒字符串str的结果
+right(str,x) 返回字符串str中最右边的x个字符
+rtrim(str) 返回字符串str尾部的空格
+strcmp(s1,s2)比较字符串s1和s2
+trim(str)去除字符串首部和尾部的所有空格
+ucase(str)或upper(str) 返回将字符串str中所有字符转变为大写后的结果
+```
